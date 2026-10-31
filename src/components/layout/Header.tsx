@@ -10,14 +10,19 @@ import {
   CheckCircle2, 
   RotateCcw,
   Sliders,
-  Code2
+  Code2,
+  TrendingUp
 } from 'lucide-react';
 import { BusinessNiche, BusinessNicheConfig } from '../../types/business';
+import { AppUser } from '../../types/user';
 
 interface HeaderProps {
   currentNiche: BusinessNiche;
   nicheConfigs: Record<BusinessNiche, BusinessNicheConfig>;
+  currentUser: AppUser;
   onSelectNiche: (niche: BusinessNiche) => void;
+  onOpenDashboard: () => void;
+  onOpenUsers: () => void;
   onOpenArchitecture: () => void;
   onOpenConfig: () => void;
   onResetData: () => void;
@@ -26,7 +31,10 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({
   currentNiche,
   nicheConfigs,
+  currentUser,
   onSelectNiche,
+  onOpenDashboard,
+  onOpenUsers,
   onOpenArchitecture,
   onOpenConfig,
   onResetData,
@@ -114,12 +122,40 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Actions / Utilities */}
         <div className="flex items-center justify-between md:justify-end gap-2 text-xs">
-          <div className="flex items-center gap-1.5 bg-slate-800/60 px-2.5 py-1 rounded-lg border border-slate-700/60 text-slate-300">
+          {/* Active Operator Pill */}
+          <button
+            onClick={onOpenUsers}
+            className="flex items-center gap-2 bg-slate-800/90 hover:bg-slate-700/80 px-2.5 py-1 rounded-xl border border-slate-700/80 text-left transition"
+            title="Gestão de Utilizadores e Troca de Operador"
+          >
+            <div className={`w-6 h-6 rounded-lg bg-gradient-to-tr ${currentUser.avatarColor} text-white font-bold flex items-center justify-center text-[10px]`}>
+              {currentUser.name.substring(0, 2).toUpperCase()}
+            </div>
+            <div className="hidden sm:block leading-tight">
+              <span className="font-bold text-slate-200 block text-[11px] truncate max-w-[110px]">
+                {currentUser.name.split(' ')[0]}
+              </span>
+              <span className="text-[9px] font-semibold text-purple-300 block">
+                {currentUser.role}
+              </span>
+            </div>
+          </button>
+
+          <div className="hidden lg:flex items-center gap-1.5 bg-slate-800/60 px-2.5 py-1 rounded-lg border border-slate-700/60 text-slate-300">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span>Caixa 01 (Aberto)</span>
+            <span>Caixa Aberto</span>
           </div>
 
           <div className="flex items-center gap-1.5">
+            <button
+              onClick={onOpenDashboard}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg border border-slate-700 transition"
+              title="Visualizar Dashboard de Vendas (Recharts)"
+            >
+              <TrendingUp size={14} className="text-emerald-400" />
+              <span className="hidden sm:inline">Dashboard</span>
+            </button>
+
             <button
               onClick={onOpenConfig}
               className="flex items-center gap-1.5 px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg border border-slate-700 transition"

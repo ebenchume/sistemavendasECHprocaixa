@@ -2,6 +2,7 @@ import { BusinessNiche, BusinessNicheConfig } from '../types/business';
 import { Product, ProductLot } from '../types/inventory';
 import { Customer, PetPatient, AgroPrescriptionRetention } from '../types/customer';
 import { RestaurantTable, KitchenTicket, Sale } from '../types/pos';
+import { AppUser } from '../types/user';
 import { NICHE_CONFIGS } from '../config/nicheConfigs';
 import {
   INITIAL_PRODUCTS,
@@ -11,7 +12,8 @@ import {
   INITIAL_AGRO_PRESCRIPTIONS,
   INITIAL_TABLES,
   INITIAL_KDS_TICKETS,
-  INITIAL_SALES
+  INITIAL_SALES,
+  INITIAL_USERS
 } from '../data/seedData';
 
 const STORAGE_KEYS = {
@@ -25,6 +27,8 @@ const STORAGE_KEYS = {
   TABLES: 'echpro_tables',
   KDS: 'echpro_kds',
   SALES: 'echpro_sales',
+  USERS: 'echpro_users',
+  CURRENT_USER: 'echpro_current_user',
 };
 
 export const StorageService = {
@@ -118,11 +122,51 @@ export const StorageService = {
 
   getSales(): Sale[] {
     const saved = localStorage.getItem(STORAGE_KEYS.SALES);
-    return saved ? JSON.parse(saved) : INITIAL_SALES;
+    if (!saved) return INITIAL_SALES;
+    try {
+      const parsed: Sale[] = JSON.parse(saved);
+      if (parsed.length < 5) {
+        // Merge with initial rich seed data so charts are immediately populated
+        const existingIds = new Set(parsed.map((s) => s.id));
+        const merged = [...parsed, ...INITIAL_SALES.filter((s) => !existingIds.has(s.id))];
+        return merged;
+      }
+      return parsed;
+    } catch {
+      return INITIAL_SALES;
+    }
   },
 
   saveSales(sales: Sale[]): void {
     localStorage.setItem(STORAGE_KEYS.SALES, JSON.stringify(sales));
+  },
+
+  getUsers(): AppUser[] {
+    const saved = localStorage.getItem(STORAGE_KEYS.USERS);
+    if (!saved) return INITIAL_USERS;
+    try {
+      return JSON.parse(saved);
+    } catch {
+      return INITIAL_USERS;
+    }
+  },
+
+  saveUsers(users: AppUser[]): void {
+    localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
+  },
+
+  getCurrentUser(): AppUser {
+    const saved = localStorage.getItem(STORAGE_KEYS.CURRENT_USER);
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch {}
+    }
+    return INITIAL_USERS[0]; // Admin by default
+  },
+
+  setCurrentUser(user: AppUser): void {
+    localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(user));
   },
 
   resetAllData(): void {
@@ -136,5 +180,7 @@ export const StorageService = {
     localStorage.removeItem(STORAGE_KEYS.TABLES);
     localStorage.removeItem(STORAGE_KEYS.KDS);
     localStorage.removeItem(STORAGE_KEYS.SALES);
+    localStorage.removeItem(STORAGE_KEYS.USERS);
+    localStorage.removeItem(STORAGE_KEYS.CURRENT_USER);
   }
 };

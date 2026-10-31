@@ -7,11 +7,13 @@ import {
   Tv, 
   SlidersHorizontal, 
   FileCode2,
-  AlertCircle
+  AlertCircle,
+  TrendingUp,
+  ShieldCheck
 } from 'lucide-react';
 import { BusinessNicheConfig } from '../../types/business';
 
-export type ActiveTab = 'pos' | 'stock' | 'customers' | 'tables' | 'kds' | 'config' | 'architecture';
+export type ActiveTab = 'pos' | 'dashboard' | 'stock' | 'customers' | 'users' | 'tables' | 'kds' | 'config' | 'architecture';
 
 interface NavigationProps {
   activeTab: ActiveTab;
@@ -54,7 +56,20 @@ export const Navigation: React.FC<NavigationProps> = ({
             )}
           </button>
 
-          {/* 2. Stock & Lotes */}
+          {/* 2. Dashboard Analytics (Recharts) */}
+          <button
+            onClick={() => onTabChange('dashboard')}
+            className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${
+              activeTab === 'dashboard'
+                ? 'bg-slate-900 text-white shadow-xs font-semibold'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+            }`}
+          >
+            <TrendingUp size={17} className={activeTab === 'dashboard' ? 'text-indigo-400' : 'text-indigo-600'} />
+            <span>Dashboard & Gráficos</span>
+          </button>
+
+          {/* 3. Stock & Lotes */}
           <button
             onClick={() => onTabChange('stock')}
             className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${
@@ -72,7 +87,7 @@ export const Navigation: React.FC<NavigationProps> = ({
             )}
           </button>
 
-          {/* 3. Clientes & Fiado */}
+          {/* 4. Clientes & Fiado */}
           <button
             onClick={() => onTabChange('customers')}
             className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${
@@ -82,7 +97,20 @@ export const Navigation: React.FC<NavigationProps> = ({
             }`}
           >
             <Users size={17} className={activeTab === 'customers' ? 'text-emerald-400' : 'text-slate-500'} />
-            <span>Clientes & Fiado (CRM)</span>
+            <span>Clientes & Fiado</span>
+          </button>
+
+          {/* 5. Utilizadores & Permissões */}
+          <button
+            onClick={() => onTabChange('users')}
+            className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${
+              activeTab === 'users'
+                ? 'bg-slate-900 text-white shadow-xs font-semibold'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+            }`}
+          >
+            <ShieldCheck size={17} className={activeTab === 'users' ? 'text-purple-400' : 'text-purple-600'} />
+            <span>Utilizadores & Perfis</span>
           </button>
 
           {/* 4. Mesas (Se restaurante ou flag ativa) */}

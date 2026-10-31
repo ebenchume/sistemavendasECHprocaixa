@@ -18,6 +18,7 @@ interface POSScreenProps {
   tables: RestaurantTable[];
   agroPrescriptions: AgroPrescriptionRetention[];
   config: BusinessNicheConfig;
+  currentOperatorName?: string;
   onSaleCompleted: (sale: Sale, updatedProducts: { productId: string; newStock: number }[]) => void;
   onSendCartToKDS?: (tableId?: string, items?: CartItem[]) => void;
 }
@@ -30,6 +31,7 @@ export const POSScreen: React.FC<POSScreenProps> = ({
   tables,
   agroPrescriptions,
   config,
+  currentOperatorName = 'Caixa Central',
   onSaleCompleted,
   onSendCartToKDS,
 }) => {
@@ -194,7 +196,7 @@ export const POSScreen: React.FC<POSScreenProps> = ({
       payments,
       config,
       selectedCustomer,
-      'Operador Caixa 01',
+      currentOperatorName,
       selectedTable?.tableNumber,
       selectedTable?.activeComandaNumber,
       notes

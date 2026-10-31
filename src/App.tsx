@@ -13,11 +13,14 @@ import { TablesMap } from './components/restaurant/TablesMap';
 import { KDSScreen } from './components/restaurant/KDSScreen';
 import { NicheConfigurator } from './components/config/NicheConfigurator';
 import { ArchitectureViewer } from './components/architecture/ArchitectureViewer';
+import { SalesDashboard } from './components/dashboard/SalesDashboard';
+import { UserManagement } from './components/users/UserManagement';
 
 import { BusinessNiche, BusinessNicheConfig, BusinessFeatureFlags } from './types/business';
 import { Product, ProductLot } from './types/inventory';
 import { Customer, PetPatient, AgroPrescriptionRetention } from './types/customer';
 import { RestaurantTable, KitchenTicket, Sale, CartItem } from './types/pos';
+import { AppUser } from './types/user';
 import { StorageService } from './services/storageService';
 import { NICHE_CONFIGS } from './config/nicheConfigs';
 
@@ -38,6 +41,8 @@ export default function App() {
     StorageService.getAgroPrescriptions()
   );
   const [sales, setSales] = useState<Sale[]>(() => StorageService.getSales());
+  const [users, setUsers] = useState<AppUser[]>(() => StorageService.getUsers());
+  const [currentUser, setCurrentUser] = useState<AppUser>(() => StorageService.getCurrentUser());
 
   // 2. Navigation State
   const [activeTab, setActiveTab] = useState<ActiveTab>('pos');
@@ -80,6 +85,14 @@ export default function App() {
   useEffect(() => {
     StorageService.saveSales(sales);
   }, [sales]);
+
+  useEffect(() => {
+    StorageService.saveUsers(users);
+  }, [users]);
+
+  useEffect(() => {
+    StorageService.setCurrentUser(currentUser);
+  }, [currentUser]);
 
   // Handler: Switch Niche
   const handleSelectNiche = (niche: BusinessNiche) => {
@@ -338,7 +351,10 @@ export default function App() {
       <Header
         currentNiche={currentNiche}
         nicheConfigs={nicheConfigs}
+        currentUser={currentUser}
         onSelectNiche={handleSelectNiche}
+        onOpenDashboard={() => setActiveTab('dashboard')}
+        onOpenUsers={() => setActiveTab('users')}
         onOpenArchitecture={() => setActiveTab('architecture')}
         onOpenConfig={() => setActiveTab('config')}
         onResetData={handleResetAllData}
@@ -366,8 +382,18 @@ export default function App() {
             tables={tables}
             agroPrescriptions={agroPrescriptions}
             config={activeConfig}
+            currentOperatorName={currentUser.name}
             onSaleCompleted={handleSaleCompleted}
             onSendCartToKDS={handleSendCartToKDS}
+          />
+        )}
+
+        {activeTab === 'dashboard' && (
+          <SalesDashboard
+            sales={sales}
+            config={activeConfig}
+            currentNiche={currentNiche}
+            onSelectNiche={handleSelectNiche}
           />
         )}
 
@@ -391,6 +417,17 @@ export default function App() {
             onUpdateCustomer={handleUpdateCustomer}
             onSettleDebt={handleSettleCustomerDebt}
             onAddCustomer={(c) => setCustomers((prev) => [c, ...prev])}
+          />
+        )}
+
+        {activeTab === 'users' && (
+          <UserManagement
+            users={users}
+            currentUser={currentUser}
+            config={activeConfig}
+            onAddUser={(u) => setUsers((prev) => [u, ...prev])}
+            onUpdateUser={(u) => setUsers((prev) => prev.map((usr) => usr.id === u.id ? u : usr))}
+            onSwitchUser={(u) => setCurrentUser(u)}
           />
         )}
 
