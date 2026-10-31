@@ -1,0 +1,6 @@
+{
+  "name": "ECHpro Universal POS & ERP",
+  "description": "Sistema de Ponto de Venda (POS) e ERP modular adaptável para Retalho, Veterinária, Agropecuária, Restauração e Quiosques.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
